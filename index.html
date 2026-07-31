@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#070707" />
+  <meta name="description" content="Aureus Motors — showroom interativo de carros em 3D." />
+  <title>Aureus Motors | Showroom 3D</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#050505;
+      --panel:#0d0d0f;
+      --panel-2:#131316;
+      --line:rgba(255,255,255,.10);
+      --text:#f7f4ee;
+      --muted:#9d9da6;
+      --gold:#e3b341;
+      --gold-2:#ffd66f;
+      --shadow:0 32px 90px rgba(0,0,0,.55);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      font-family:Inter,system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 38% 24%,rgba(227,179,65,.12),transparent 28%),
+        radial-gradient(circle at 72% 68%,rgba(255,255,255,.04),transparent 25%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+
+    button,a{font:inherit}
+    button{cursor:pointer}
+    .shell{width:min(1480px,calc(100% - 40px));margin:auto}
+
+    header{
+      position:sticky;top:0;z-index:20;
+      background:rgba(5,5,5,.82);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--line);
+    }
+    nav{
+      height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px
+    }
+    .brand{
+      display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--text);
+      letter-spacing:.22em;text-transform:uppercase;font-weight:700
+    }
+    .brand-mark{
+      width:34px;height:34px;border:1px solid var(--gold);display:grid;place-items:center;
+      transform:rotate(45deg)
+    }
+    .brand-mark span{transform:rotate(-45deg);color:var(--gold)}
+    .nav-links{display:flex;gap:26px}
+    .nav-links a{color:#d6d2ca;text-decoration:none;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase}
+
+    main{padding:58px 0 72px}
+    .eyebrow{
+      color:var(--gold);font-size:.74rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase
+    }
+    h1{
+      max-width:920px;margin:10px 0 12px;
+      font-family:"Cormorant Garamond",serif;
+      font-size:clamp(3.3rem,7vw,7.2rem);
+      line-height:.82;letter-spacing:-.045em
+    }
+    .intro{
+      max-width:720px;color:var(--muted);line-height:1.7;margin-bottom:34px
+    }
+
+    .showroom{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 390px;
+      min-height:680px;
+      border:1px solid var(--line);
+      border-radius:26px;
+      overflow:hidden;
+      background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.01));
+      box-shadow:var(--shadow);
+    }
+
+    .stage{
+      position:relative;min-height:680px;overflow:hidden;
+      background:
+        radial-gradient(circle at 50% 72%,rgba(227,179,65,.18),transparent 21%),
+        linear-gradient(180deg,#09090a 0%,#0f0f11 66%,#080808 100%);
+    }
+    .stage::before{
+      content:"";position:absolute;left:7%;right:7%;bottom:8%;height:16%;
+      border-radius:50%;background:rgba(255,255,255,.055);filter:blur(22px);
+      transform:perspective(500px) rotateX(68deg)
+    }
+    .stage::after{
+      content:"";position:absolute;inset:auto 8% 0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(227,179,65,.45),transparent)
+    }
+
+    model-viewer{
+      width:100%;height:100%;min-height:680px;
+      --poster-color:transparent;
+      outline:none;
+    }
+
+    .stage-top{
+      position:absolute;z-index:4;top:24px;left:24px;right:24px;
+      display:flex;justify-content:space-between;gap:12px;pointer-events:none
+    }
+    .chip{
+      padding:11px 14px;border:1px solid var(--line);background:rgba(5,5,5,.60);
+      backdrop-filter:blur(10px);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase
+    }
+    .chip.gold{color:var(--gold)}
+    .loader{
+      position:absolute;z-index:6;left:50%;bottom:31px;transform:translateX(-50%);
+      width:min(420px,70%);transition:.25s;pointer-events:none
+    }
+    .loader-track{height:3px;background:rgba(255,255,255,.12);overflow:hidden}
+    .loader-bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .16s}
+    .loader-text{margin-top:9px;color:#d8d2c5;font-size:.69rem;letter-spacing:.13em;text-transform:uppercase;text-align:center}
+    .loader.done{opacity:0;visibility:hidden}
+
+    .panel{
+      padding:31px 26px 24px;border-left:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(16,16,18,.98),rgba(8,8,9,.98));
+      display:flex;flex-direction:column
+    }
+    .counter{font-size:.72rem;color:var(--gold);letter-spacing:.18em;text-transform:uppercase}
+    .car-title{
+      margin:12px 0 7px;font-family:"Cormorant Garamond",serif;font-size:2.45rem;line-height:.98
+    }
+    .car-subtitle{color:var(--muted);line-height:1.55;font-size:.9rem;min-height:44px}
+    .stats{
+      margin:26px 0;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line)
+    }
+    .stat{padding:16px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .stat:nth-child(2n){border-right:0}
+    .stat:nth-last-child(-n+2){border-bottom:0}
+    .stat small{display:block;color:#73737c;font-size:.61rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+    .stat strong{font-size:.92rem}
+    .cars{display:grid;gap:7px;max-height:340px;overflow:auto;padding-right:4px}
+    .cars::-webkit-scrollbar{width:5px}
+    .cars::-webkit-scrollbar-thumb{background:#353538}
+    .car-btn{
+      border:1px solid transparent;background:rgba(255,255,255,.025);color:#dbd8d2;
+      padding:13px 14px;text-align:left;display:grid;grid-template-columns:34px 1fr auto;
+      align-items:center;gap:10px;transition:.22s
+    }
+    .car-btn:hover{border-color:rgba(227,179,65,.32);transform:translateX(-2px)}
+    .car-btn.active{background:linear-gradient(90deg,rgba(227,179,65,.17),rgba(227,179,65,.04));border-color:rgba(227,179,65,.52)}
+    .num{color:var(--gold);font-size:.66rem}
+    .car-btn b{font-size:.82rem}
+    .arrow{color:#727277}
+    .actions{margin-top:auto;padding-top:20px;display:grid;grid-template-columns:1fr 48px;gap:10px}
+    .primary,.icon-btn{
+      border:0;background:var(--gold);color:#0b0904;font-weight:800;text-transform:uppercase;letter-spacing:.11em
+    }
+    .primary{padding:16px}
+    .icon-btn{display:grid;place-items:center;font-size:1.05rem}
+    .hint{margin-top:13px;text-align:center;color:#707079;font-size:.67rem}
+
+    .error{
+      display:none;position:absolute;z-index:8;inset:0;place-items:center;padding:30px;text-align:center;
+      background:rgba(5,5,5,.92)
+    }
+    .error.show{display:grid}
+    .error-card{max-width:500px}
+    .error h3{font-family:"Cormorant Garamond",serif;font-size:2rem;margin:0 0 10px}
+    .error p{color:var(--muted);line-height:1.6}
+
+    @media(max-width:980px){
+      .showroom{grid-template-columns:1fr}
+      .panel{border-left:0;border-top:1px solid var(--line)}
+      .stage,model-viewer{min-height:560px}
+      .cars{max-height:none}
+    }
+    @media(max-width:640px){
+      .shell{width:min(100% - 22px,1480px)}
+      nav{height:64px}.nav-links{display:none}
+      main{padding-top:38px}
+      h1{font-size:3.6rem}
+      .stage,model-viewer{min-height:440px}
+      .stage-top{top:14px;left:14px;right:14px}
+      .chip:last-child{display:none}
+      .panel{padding:24px 18px}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <nav class="shell">
+    <a class="brand" href="#">
+      <span class="brand-mark"><span>◆</span></span>
+      Aureus Motors
+    </a>
+    <div class="nav-links">
+      <a href="#showroom">Showroom</a>
+      <a href="mailto:contato@aureusmotors.com">Contato</a>
+    </div>
+  </nav>
+</header>
+
+<main class="shell">
+  <div class="eyebrow">Coleção interativa</div>
+  <h1>Escolha sua próxima máquina.</h1>
+  <p class="intro">
+    Explore cada veículo em 360°, aproxime os detalhes e compare os modelos em um showroom digital.
+  </p>
+
+  <section class="showroom" id="showroom">
+    <div class="stage">
+      <div class="stage-top">
+        <div class="chip gold">Modelo 3D interativo</div>
+        <div class="chip">Arraste · Zoom · Tela cheia</div>
+      </div>
+
+      <model-viewer
+        id="viewer"
+        src="./Models/ferrari-roma.glb"
+        alt="Modelo 3D Ferrari Roma"
+        camera-controls
+        touch-action="pan-y"
+        auto-rotate
+        auto-rotate-delay="1000"
+        rotation-per-second="12deg"
+        shadow-intensity="1.35"
+        shadow-softness=".85"
+        exposure="1.08"
+        tone-mapping="aces"
+        interaction-prompt="auto"
+        loading="eager"
+        reveal="auto"
+        camera-orbit="35deg 72deg auto"
+        min-camera-orbit="auto 48deg auto"
+        max-camera-orbit="auto 88deg auto"
+        field-of-view="32deg">
+      </model-viewer>
+
+      <div class="loader" id="loader">
+        <div class="loader-track"><div class="loader-bar" id="loaderBar"></div></div>
+        <div class="loader-text" id="loaderText">Carregando modelo 3D — 0%</div>
+      </div>
+
+      <div class="error" id="errorBox">
+        <div class="error-card">
+          <h3>Modelo não encontrado</h3>
+          <p id="errorText">Confira se o arquivo existe dentro da pasta <b>Models</b> e se o nome está exatamente igual.</p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <div class="counter" id="counter">01 / 09</div>
+      <h2 class="car-title" id="carTitle">Ferrari Roma</h2>
+      <p class="car-subtitle" id="carSubtitle">Grand tourer italiano com design elegante e desempenho envolvente.</p>
+
+      <div class="stats">
+        <div class="stat"><small>Categoria</small><strong id="category">Grand Tourer</strong></div>
+        <div class="stat"><small>Visualização</small><strong>360°</strong></div>
+        <div class="stat"><small>Formato</small><strong>GLB / PBR</strong></div>
+        <div class="stat"><small>Controle</small><strong>Mouse e toque</strong></div>
+      </div>
+
+      <div class="cars" id="cars"></div>
+
+      <div class="actions">
+        <button class="primary" id="resetBtn">Centralizar câmera</button>
+        <button class="icon-btn" id="rotateBtn" title="Ativar ou pausar rotação">↻</button>
+      </div>
+      <div class="hint">Os caminhos usam exatamente a pasta <b>Models</b>.</div>
+    </aside>
+  </section>
+</main>
+
+<script>
+  const models = [
+    {
+      name: "Ferrari Roma",
+      file: "ferrari-roma.glb",
+      category: "Grand Tourer",
+      description: "Grand tourer italiano com design elegante e desempenho envolvente."
+    },
+    {
+      name: "Porsche 911",
+      file: "porsche-911.glb",
+      category: "Esportivo",
+      description: "Ícone esportivo com equilíbrio, precisão e desenho atemporal."
+    },
+    {
+      name: "Bugatti Chiron",
+      file: "bugatti-chiron.glb",
+      category: "Hipercarro",
+      description: "Hipercarro de presença monumental, luxo extremo e aerodinâmica marcante."
+    },
+    {
+      name: "Koenigsegg Jesko",
+      file: "koenigsegg-jesko.glb",
+      category: "Hipercarro",
+      description: "Máquina escandinava focada em velocidade, leveza e engenharia avançada."
+    },
+    {
+      name: "Lamborghini Revuelto",
+      file: "lamborghini-revuelto.glb",
+      category: "Superesportivo",
+      description: "Linhas agressivas, perfil baixo e linguagem visual inconfundível."
+    },
+    {
+      name: "McLaren 750S",
+      file: "mclaren-750s.glb",
+      category: "Superesportivo",
+      description: "Supercarro britânico leve, aerodinâmico e orientado ao desempenho."
+    },
+    {
+      name: "Mercedes-AMG One",
+      file: "mercedes-amg-one.glb",
+      category: "Hipercarro",
+      description: "Tecnologia inspirada na Fórmula 1 aplicada a um automóvel de rua."
+    },
+    {
+      name: "Pagani Huayra",
+      file: "pagani-huayra.glb",
+      category: "Hipercarro",
+      description: "Escultura automotiva que combina artesanato, carbono e personalidade."
+    },
+    {
+      name: "Aston Martin Valkyrie",
+      file: "aston-martin-valkyrie.glb",
+      category: "Hipercarro",
+      description: "Projeto radical com aerodinâmica extrema e proporções de protótipo."
+    }
+  ];
+
+  const viewer = document.querySelector("#viewer");
+  const carsEl = document.querySelector("#cars");
+  const titleEl = document.querySelector("#carTitle");
+  const subtitleEl = document.querySelector("#carSubtitle");
+  const categoryEl = document.querySelector("#category");
+  const counterEl = document.querySelector("#counter");
+  const loader = document.querySelector("#loader");
+  const loaderBar = document.querySelector("#loaderBar");
+  const loaderText = document.querySelector("#loaderText");
+  const errorBox = document.querySelector("#errorBox");
+  const errorText = document.querySelector("#errorText");
+  const resetBtn = document.querySelector("#resetBtn");
+  const rotateBtn = document.querySelector("#rotateBtn");
+
+  let activeIndex = 0;
+  let autoRotate = true;
+
+  function renderButtons() {
+    carsEl.innerHTML = models.map((car, index) => `
+      <button class="car-btn ${index === activeIndex ? "active" : ""}" data-index="${index}">
+        <span class="num">${String(index + 1).padStart(2, "0")}</span>
+        <b>${car.name}</b>
+        <span class="arrow">›</span>
+      </button>
+    `).join("");
+
+    carsEl.querySelectorAll(".car-btn").forEach(btn => {
+      btn.addEventListener("click", () => selectModel(Number(btn.dataset.index)));
+    });
+  }
+
+  function selectModel(index) {
+    activeIndex = index;
+    const car = models[index];
+
+    errorBox.classList.remove("show");
+    loader.classList.remove("done");
+    loaderBar.style.width = "0%";
+    loaderText.textContent = "Carregando modelo 3D — 0%";
+
+    titleEl.textContent = car.name;
+    subtitleEl.textContent = car.description;
+    categoryEl.textContent = car.category;
+    counterEl.textContent = `${String(index + 1).padStart(2, "0")} / ${String(models.length).padStart(2, "0")}`;
+
+    viewer.alt = `Modelo 3D ${car.name}`;
+    viewer.src = `./Models/${car.file}`;
+    viewer.cameraOrbit = "35deg 72deg auto";
+    viewer.fieldOfView = "32deg";
+    viewer.autoRotate = autoRotate;
+
+    renderButtons();
+  }
+
+  viewer.addEventListener("progress", event => {
+    const pct = Math.round((event.detail.totalProgress || 0) * 100);
+    loaderBar.style.width = pct + "%";
+    loaderText.textContent = `Carregando modelo 3D — ${pct}%`;
+    if (pct >= 100) setTimeout(() => loader.classList.add("done"), 450);
+  });
+
+  viewer.addEventListener("load", () => {
+    loaderBar.style.width = "100%";
+    loaderText.textContent = "Modelo pronto";
+    setTimeout(() => loader.classList.add("done"), 450);
+  });
+
+  viewer.addEventListener("error", () => {
+    const car = models[activeIndex];
+    loader.classList.add("done");
+    errorText.innerHTML = `Não foi possível abrir <b>Models/${car.file}</b>.<br>Confira o nome, as letras maiúsculas e se o arquivo foi enviado completamente.`;
+    errorBox.classList.add("show");
+  });
+
+  resetBtn.addEventListener("click", () => {
+    viewer.cameraOrbit = "35deg 72deg auto";
+    viewer.fieldOfView = "32deg";
+    viewer.jumpCameraToGoal();
+  });
+
+  rotateBtn.addEventListener("click", () => {
+    autoRotate = !autoRotate;
+    viewer.autoRotate = autoRotate;
+    rotateBtn.textContent = autoRotate ? "↻" : "Ⅱ";
+    rotateBtn.title = autoRotate ? "Pausar rotação" : "Ativar rotação";
+  });
+
+  renderButtons();
+</script>
+</body>
+</html>
