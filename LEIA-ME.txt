@@ -1,0 +1,23 @@
+AUREUS MOTORS 3D PRO
+
+COMO ABRIR
+1. Extraia o arquivo ZIP inteiro.
+2. Abra a pasta no Visual Studio Code.
+3. Instale a extensão Live Server.
+4. Clique com o botão direito em index.html e escolha “Open with Live Server”.
+
+IMPORTANTE
+- Não mova o index.html para fora da pasta.
+- A pasta models deve permanecer ao lado do index.html.
+- Troque 5595999999999 pelo seu número de WhatsApp.
+- Os modelos atuais são conceituais, não reproduções oficiais.
+- Para usar modelos realistas, substitua cada GLB mantendo o mesmo nome.
+
+MELHORIAS DESTA VERSÃO
+- Apenas um visualizador 3D ativo, reduzindo uso de GPU e memória.
+- Catálogo lateral para trocar de veículo.
+- Filtros por categoria.
+- Botões para pausar rotação e redefinir câmera.
+- Mensagem automática do WhatsApp com o veículo selecionado.
+- Tratamento de erro no carregamento do modelo.
+- Layout responsivo para celular.
